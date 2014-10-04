@@ -1,19 +1,23 @@
 # node-mv
+
 This is a utility command line tool for renaming or moving a node.js file. It will update all the files
 under the current folder to have correct reference to the moved file. And also it will update all the file paths
 required in the renamed/moved file.
 
 
-### How to get it?
+## How to get it?
 
-```(bash)
+```bash
 npm install node-mv -g
+```
 
-### How to run it?
 
-```(bash)
+
+## How to run it?
+
+```bash
 node-mv file newPathForTheFile
-
+```
 
 ## License
 The MIT License (MIT)
