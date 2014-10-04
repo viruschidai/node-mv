@@ -1,16 +1,37 @@
 {
-  "name": "node-rename",
+  "name": "node-mv",
   "version": "0.0.1",
-  "description": "Command tool for rename source files and their references",
+  "description": "Command tool for renaming/moving a node.js source file and update all references to the file",
   "main": "index.js",
   "dependencies": {
+    "async": "^0.9.0",
     "commander": "^2.3.0",
     "glob": "^4.0.6"
   },
   "devDependencies": {},
+  "author": "Bill Gao (viruschidai@gmail.com)",
+  "license": "MIT",
+  "bin": {
+    "node-mv": "mv.js"
+  },
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "MIC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viruschidai/node-mv.git"
+  },
+  "keywords": [
+    "node.js",
+    "rename",
+    "file",
+    "mv"
+  ],
+  "bugs": {
+    "url": "https://github.com/viruschidai/node-mv/issues"
+  },
+  "homepage": "https://github.com/viruschidai/node-mv"
 }
