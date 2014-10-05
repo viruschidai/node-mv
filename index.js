@@ -29,9 +29,9 @@ exports.updateReferenceInFile = function(sourceAbsPath, destAbsPath, cb) {
   fs.readFile(destAbsPath, 'utf8', function(err, data) {
     if (err) return cb(err);
 
-    var re = /require(\(|\s)('|")(\.\S+)('|")(\))?/g;
-    var re1 = /require(\(|\s)('|")(\.\S+)('|")(\))?/;
-    var matches = data.match(re);
+    var re = /require(\(|\s)('|")(\.\S+)('|")(\))?/g,
+      re1 = /require(\(|\s)('|")(\.\S+)('|")(\))?/,
+      matches = data.match(re);
 
     if (matches) {
       matches.forEach(function(match) {
@@ -55,6 +55,7 @@ exports.updateReferenceInFile = function(sourceAbsPath, destAbsPath, cb) {
 
 exports.updateReferenceToMovedFile = function(currentDir, sourceAbsPath, destAbsPath, cb) {
   var fileMatchingStr = exports.getFileMatchingStr();
+
   glob(fileMatchingStr, {cwd:currentDir}, function(err, files) {
     if (err) return cb(err);
 

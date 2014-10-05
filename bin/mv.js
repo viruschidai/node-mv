@@ -22,7 +22,7 @@ if (process.argv.length < 4) {
 }
 
 var source = process.argv[2],
-    dest = process.argv[3];
+  dest = process.argv[3];
 
 var currentDir = process.cwd(),
   sourceAbsPath = path.join(currentDir, source),
@@ -30,6 +30,7 @@ var currentDir = process.cwd(),
 
 mv.mvFile(currentDir, sourceAbsPath, destAbsPath, function(err) {
   if (err) {
+    console.error(err);
     process.exit(1);
   }
 
