@@ -28,13 +28,10 @@ var currentDir = process.cwd(),
   sourceAbsPath = path.join(currentDir, source),
   destAbsPath = path.join(currentDir, dest);
 
-
-console.log('Start renaming');
 mv.mvFile(currentDir, sourceAbsPath, destAbsPath, function(err) {
   if (err) {
     process.exit(1);
   }
 
-  console.log('Successfully moved file and updated all file references');
   process.exit();
 })

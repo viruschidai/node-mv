@@ -1,6 +1,6 @@
 {
   "name": "node-mv",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "Command-line tool for renaming/moving a node.js source file and update all references to the file",
   "main": "index.js",
   "dependencies": {
@@ -12,7 +12,7 @@
   "author": "Bill Gao (viruschidai@gmail.com)",
   "license": "MIT",
   "bin": {
-    "node-mv": "mv.js"
+    "node-mv": "./bin/mv.js"
   },
   "directories": {
     "test": "test"

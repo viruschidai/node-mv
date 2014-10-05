@@ -32,6 +32,7 @@ exports.updateReferenceInFile = function(sourceAbsPath, destAbsPath, cb) {
     var re = /require(\(|\s)('|")(\.\S+)('|")(\))?/g;
     var re1 = /require(\(|\s)('|")(\.\S+)('|")(\))?/;
     var matches = data.match(re);
+    console.log(matches)
 
     if (matches) {
       matches.forEach(function(match) {
@@ -40,7 +41,7 @@ exports.updateReferenceInFile = function(sourceAbsPath, destAbsPath, cb) {
         var oldPath = groups[3];
         var oldAsbPath = path.join(path.dirname(sourceAbsPath), oldPath);
         var newRelativePath = path.relative(path.dirname(destAbsPath), oldAsbPath);
-        if (newRelativePath.indexOf(".") < 0 ) {
+        if (newRelativePath.indexOf(".") != 0 ) {
           newRelativePath = './' + newRelativePath;
         }
         var newRequire = oldRequire.replace(re1, 'require$1$2' + newRelativePath + '$4$5');
@@ -53,17 +54,16 @@ exports.updateReferenceInFile = function(sourceAbsPath, destAbsPath, cb) {
 
 exports.updateReferenceToMovedFile = function(currentDir, sourceAbsPath, destAbsPath, cb) {
   var fileMatchingStr = exports.getFileMatchingStr();
-
   glob(fileMatchingStr, {cwd:currentDir}, function(err, files) {
     if (err) return cb(err);
 
-    function updateReferenceForFile(file) {
-      var oldRelativePath = path.relative(path.dirname(file), sourceAbsPath).replace(/\.(js|coffee)$/g, ''),
-        newRelativePath = path.relative(path.dirname(file), destAbsPath).replace(/\.(js|coffee)$/g, '');
-      if (oldRelativePath.indexOf(".") < 0 ) {
+    function updateReferenceForFile(file, cb) {
+      var oldRelativePath = path.relative(path.dirname(file), sourceAbsPath).replace(/\.(js|coffee)$/, ''),
+        newRelativePath = path.relative(path.dirname(file), destAbsPath).replace(/\.(js|coffee)$/, '');
+      if (oldRelativePath.indexOf(".") != 0 ) {
         oldRelativePath = './' + oldRelativePath;
       }
-      if (newRelativePath.indexOf(".") < 0 ) {
+      if (newRelativePath.indexOf(".") != 0 ) {
         newRelativePath = './' + newRelativePath;
       }
       var regex = new RegExp("require\\('" + oldRelativePath+"'\\)", "g")
