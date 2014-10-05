@@ -32,18 +32,19 @@ exports.updateReferenceInFile = function(sourceAbsPath, destAbsPath, cb) {
     var re = /require(\(|\s)('|")(\.\S+)('|")(\))?/g;
     var re1 = /require(\(|\s)('|")(\.\S+)('|")(\))?/;
     var matches = data.match(re);
-    console.log(matches)
 
     if (matches) {
       matches.forEach(function(match) {
-        var oldRequire = match;
-        var groups = re1.exec(match);
-        var oldPath = groups[3];
-        var oldAsbPath = path.join(path.dirname(sourceAbsPath), oldPath);
-        var newRelativePath = path.relative(path.dirname(destAbsPath), oldAsbPath);
+        var oldRequire = match,
+          groups = re1.exec(match),
+          oldPath = groups[3],
+          oldAsbPath = path.join(path.dirname(sourceAbsPath), oldPath),
+          newRelativePath = path.relative(path.dirname(destAbsPath), oldAsbPath);
+
         if (newRelativePath.indexOf(".") != 0 ) {
           newRelativePath = './' + newRelativePath;
         }
+
         var newRequire = oldRequire.replace(re1, 'require$1$2' + newRelativePath + '$4$5');
         data = data.replace(oldRequire, newRequire);
       })
@@ -66,14 +67,20 @@ exports.updateReferenceToMovedFile = function(currentDir, sourceAbsPath, destAbs
       if (newRelativePath.indexOf(".") != 0 ) {
         newRelativePath = './' + newRelativePath;
       }
-      var regex = new RegExp("require\\('" + oldRelativePath+"'\\)", "g")
+
+      var regex = exports.generateRequireRegex(oldRelativePath);
       fs.readFile(file, 'utf8', function(err, data) {
         if (err) return cb(err);
 
-        var result = data.replace(regex, "require('" + newRelativePath + "')");
+        var result = data.replace(regex, 'require$1$2' + newRelativePath + '$4$5');
         fs.writeFile(file, result, {encoding: 'utf8'}, cb);
       })
     }
     async.eachLimit(files, 20, updateReferenceForFile, cb);
   })
+}
+
+
+exports.generateRequireRegex = function(filePath) {
+  return new RegExp("require(\\(|\\s)('|\")(" + filePath + ")('|\")(\\))?", "g");
 }
