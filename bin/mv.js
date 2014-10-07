@@ -5,16 +5,25 @@
  */
 
 var path = require('path'),
-  fs = require('fs'),
   util = require('util'),
-  glob = require('glob'),
   program = require('commander'),
   mv = require('../index.js');
+
+
+function regexList(val) {
+  var list = val.split(','), i = 0, len = list.length;
+  var ret = [];
+  for (; i<len; i++) {
+    ret.push(new RegExp(list[i], "g"));
+  }
+  return ret;
+}
 
 program
   .version('0.0.1')
   // Not implemented yet
   .option('-g, --git', 'Rename in git')
+  .option('-e, --excludes <items>', 'List of regex for dir/files to excludes', regexList)
   .parse(process.argv);
 
 if (process.argv.length < 4) {
@@ -28,9 +37,9 @@ var currentDir = process.cwd(),
   sourceAbsPath = path.join(currentDir, source),
   destAbsPath = path.join(currentDir, dest);
 
-mv.mvFile(currentDir, sourceAbsPath, destAbsPath, function(err) {
+mv.mvFile(currentDir, sourceAbsPath, destAbsPath, program, function(err) {
   if (err) {
-    console.error(err);
+    console.error(util.inspect(err, {depth: 10}));
     process.exit(1);
   }
 

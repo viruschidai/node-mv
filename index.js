@@ -1,27 +1,40 @@
 var path = require('path'),
   fs = require('fs'),
+  exec = require('child_process').exec,
   util = require('util'),
-  glob = require('glob'),
-  async = require('async');
+  async = require('async'),
+  walk = require('./lib/walk');
 
-var supportedFileTypes = ['js', 'coffee'];
+var defaultRegExcludes = [/^\.+.*/, /node_modules/]
 
-exports.getFileMatchingStr = function() {
-  return '**/*.+(' + supportedFileTypes.join('|') + ')';
-}
-
-exports.mvFile = function(currentDir, sourceAbsPath, destAbsPath, cb) {
+exports.mvFile = function(currentDir, sourceAbsPath, destAbsPath, options, cb) {
   fs.exists(sourceAbsPath, function(exists) {
     if (!exists) return cb(new Error('File ' + sourceAbsPath + ' does not exist!'));
 
-    fs.rename(sourceAbsPath, destAbsPath, function(err) {
-      if (err) return cb(err);
+    steps = [];
+    if (options.git) {
+      steps.push(function(cb) {
+        exec('git mv ' + sourceAbsPath + ' ' + destAbsPath, function(err, stdout, stderr) {
+          if (err) return cb(err);
+          if (stderr) return cb(stderr);
+          cb();
+        })
+      })
+    } else {
+      steps.push(function(cb) {
+        fs.rename(sourceAbsPath, destAbsPath, cb);
+      })
+    }
 
-      async.series([
-        function(cb) {exports.updateReferenceInFile(sourceAbsPath, destAbsPath, cb)},
-        function(cb) {exports.updateReferenceToMovedFile(currentDir, sourceAbsPath, destAbsPath, cb)}
-      ], cb)
-    })
+    var excludes = defaultRegExcludes;
+    if (options.excludes) {
+      excludes = excludes.concat(options.excludes);
+    }
+    // var regExcludes = options.excludes;
+    steps.push(function(cb) {exports.updateReferenceInFile(sourceAbsPath, destAbsPath, cb)});
+    steps.push(function(cb) {exports.updateReferenceToMovedFile(currentDir, sourceAbsPath, destAbsPath, excludes, cb)});
+
+    async.series(steps, cb);
   });
 };
 
@@ -53,10 +66,8 @@ exports.updateReferenceInFile = function(sourceAbsPath, destAbsPath, cb) {
   });
 }
 
-exports.updateReferenceToMovedFile = function(currentDir, sourceAbsPath, destAbsPath, cb) {
-  var fileMatchingStr = exports.getFileMatchingStr();
-
-  glob(fileMatchingStr, {cwd:currentDir}, function(err, files) {
+exports.updateReferenceToMovedFile = function(currentDir, sourceAbsPath, destAbsPath, regExcludes, cb) {
+  walk(currentDir, regExcludes, function(err, files) {
     if (err) return cb(err);
 
     function updateReferenceForFile(file, cb) {
@@ -72,15 +83,18 @@ exports.updateReferenceToMovedFile = function(currentDir, sourceAbsPath, destAbs
       var regex = exports.generateRequireRegex(oldRelativePath);
       fs.readFile(file, 'utf8', function(err, data) {
         if (err) return cb(err);
+        if (data.indexOf(regex)) {
+          var result = data.replace(regex, 'require$1$2' + newRelativePath + '$4$5');
+          fs.writeFile(file, result, {encoding: 'utf8'}, cb);
+        } else {
+          return cb()
+        }
 
-        var result = data.replace(regex, 'require$1$2' + newRelativePath + '$4$5');
-        fs.writeFile(file, result, {encoding: 'utf8'}, cb);
       })
     }
     async.eachLimit(files, 20, updateReferenceForFile, cb);
   })
 }
-
 
 exports.generateRequireRegex = function(filePath) {
   return new RegExp("require(\\(|\\s)('|\")(" + filePath + ")('|\")(\\))?", "g");
