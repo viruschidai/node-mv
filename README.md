@@ -4,8 +4,9 @@ This is a utility command line tool for renaming or moving a node.js file. It wi
 under the current folder to have correct reference to the moved file. And also it will update all the file paths
 required in the renamed/moved file.
 
-Note: only js or coffee files are supported.
-
+Note:
+  1. Only js or coffee files are supported.
+  2. Supporting of renaming/moving dir will be implemented soon.
 
 ## How to get it?
 
