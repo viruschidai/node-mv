@@ -1,7 +1,6 @@
 var path = require('path'),
   fs = require('fs'),
   exec = require('child_process').exec,
-  util = require('util'),
   async = require('async'),
   walk = require('./lib/walk');
 
