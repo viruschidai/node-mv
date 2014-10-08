@@ -5,7 +5,7 @@ under the current folder to have correct reference to the moved file. And also i
 required in the renamed/moved file.
 
 Note:
-  1. Only js or coffee files are supported.
+  1. Both js and coffee files are supported.
   2. Supporting of renaming/moving dir will be implemented soon.
 
 ## How to get it?
@@ -18,7 +18,7 @@ npm install node-mv -g
 
 ### Run it without any options
 ```bash
-node-mv file newPathForTheFile
+node-mv sample.js sample-renamed.js
 ```
 
 ### Exclude dir/files
@@ -26,7 +26,7 @@ node-mv file newPathForTheFile
 You can pass a list of regex to `--excludes` to exclude folders or files you don't want the program to search
 
 ```bash
-node-mv file newPathForTheFile --excludes=/node_modules/
+node-mv file sample.js sample-renamed.js --excludes=/build/
 ```
 
 ### Git support
@@ -35,7 +35,7 @@ If you source file is under git repo, use `--git` option
 
 
 ```bash
-node-mv file newPathForTheFile --git
+node-mv sample.js sample-renamed.js --git
 ```
 
 ## License
