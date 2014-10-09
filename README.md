@@ -5,7 +5,6 @@ under the current folder to have correct reference to the moved file. And also i
 required in the renamed/moved file.
 
 Note: Both js and coffee files are supported.
-  1. Both js and coffee files are supported.
 
 ## How to get it?
 
