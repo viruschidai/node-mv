@@ -34,10 +34,11 @@ var source = process.argv[2],
   dest = process.argv[3];
 
 var currentDir = process.cwd(),
-  sourceAbsPath = path.join(currentDir, source),
+  originalPath = path.join(currentDir, source),
   destAbsPath = path.join(currentDir, dest);
 
-mv.mvFile(currentDir, sourceAbsPath, destAbsPath, program, function(err) {
+
+mv(currentDir, originalPath, destAbsPath, program, function(err) {
   if (err) {
     console.error(util.inspect(err, {depth: 10}));
     process.exit(1);
