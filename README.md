@@ -25,7 +25,7 @@ node-mv sample.js sample-renamed.js
 You can pass a list of regex to `--excludes` to exclude folders or files you don't want the program to search
 
 ```bash
-node-mv file sample.js sample-renamed.js --excludes=/build/
+node-mv sample.js sample-renamed.js --excludes=/build/
 ```
 
 ### Git support
