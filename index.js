@@ -2,9 +2,12 @@ var path = require('path'),
   fs = require('fs'),
   exec = require('child_process').exec,
   async = require('async'),
+  ProgressBar = require('progress'),
   walk = require('./lib/walk');
 
-var defaultRegExcludes = [/^\.+.*/, /node_modules/]
+var defaultRegExcludes = [/^\.+.*/, /node_modules/];
+
+var bar = null;
 
 module.exports = exports = function(currentDir, originalFilePath, newFilePath, options, cb) {
   validatePaths(originalFilePath, newFilePath, function(err) {
@@ -26,7 +29,7 @@ function mvFile(currentDir, originalFilePath, newFilePath, options, cb) {
   steps = [function(cb) {
     rename(originalFilePath, newFilePath, options.git, cb)
   }];
-
+  bar = new ProgressBar(':bar', {total: files.length});
   excludes = getExcludes(options);
   steps.push(function(cb) {updateReferencesInMovedFile(originalFilePath, newFilePath, null, cb)});
   steps.push(function(cb) {updateReferencesToMovedFile(currentDir, originalFilePath, newFilePath, excludes, cb)});
@@ -68,10 +71,13 @@ function mvDir(currentDir, originalDirPath, newDirPath, options, cb) {
     walk(originalDirPath, [], function(err, files) {
       if (err) return cb(err);
 
+      bar = new ProgressBar('  processing [:bar] :percent :etas', {total: files.length});
+
       rename(originalDirPath, newDirPath, options.git, function(err) {
         if (err) return cb(err);
 
         async.eachSeries(files, function(file, cb) {
+          bar.tick();
           var newFilePath = file.replace(originalDirPath, newDirPath);
 
           steps = [];

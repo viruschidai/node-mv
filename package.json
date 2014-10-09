@@ -5,7 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "async": "^0.9.0",
-    "commander": "^2.3.0"
+    "commander": "^2.3.0",
+    "progress": "^1.1.8"
   },
   "devDependencies": {},
   "author": "Bill Gao (viruschidai@gmail.com)",
