@@ -1,8 +1,7 @@
 # node-mv
 
-This is a utility command line tool for renaming or moving a node.js file. It will update all the files
-under the current folder to have correct reference to the moved file. And also it will update all the file paths
-required in the renamed/moved file.
+This is a utility command line tool for renaming or moving node.js file/folder. It will update all the files
+under the current folder to have correct references to the moved files.
 
 Note: Both js and coffee files are supported.
 
@@ -14,18 +13,7 @@ npm install node-mv -g
 
 ## How to run it?
 
-### Run it without any options
-```bash
-node-mv sample.js sample-renamed.js
-```
-
 ### Exclude dir/files
-
-You can pass a list of regex to `--excludes` to exclude folders or files you don't want the program to search
-
-```bash
-node-mv sample.js sample-renamed.js --excludes=/build/
-```
 
 ### Git support
 
@@ -34,6 +22,19 @@ If you source file is under git repo, use `--git` option
 
 ```bash
 node-mv sample.js sample-renamed.js --git
+```
+
+You can pass a list of regex to `--excludes` to exclude folders or files you don't want the program to search
+
+```bash
+node-mv sample.js sample-renamed.js --excludes=build,coverage
+```
+
+
+### Run it without any options
+
+```bash
+node-mv sample.js sample-renamed.js 
 ```
 
 ## License
