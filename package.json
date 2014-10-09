@@ -1,6 +1,6 @@
 {
   "name": "node-mv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command-line tool for renaming/moving a node.js source file and update all references to the file",
   "main": "index.js",
   "dependencies": {
