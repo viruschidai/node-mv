@@ -1,7 +1,7 @@
 # node-mv
 
 This is a utility command line tool for renaming or moving node.js file/folder. It will update all the files
-under the current folder to have correct references to the moved files.
+under the current folder to have correct rquire path to the moved files.
 
 Note: Both js and coffee files are supported.
 
