@@ -9,32 +9,34 @@ var defaultRegExcludes = [/^\.+.*/, /node_modules/];
 
 var bar = null;
 
-module.exports = exports = function(currentDir, originalFilePath, newFilePath, options, cb) {
-  validatePaths(originalFilePath, newFilePath, function(err) {
-    if (err) return cb(err);
+module.exports = exports = function(currentDir, originalPath, newPath, options, cb) {
+  fs.exists(originalPath, function(exists){
+    if (!exists) return cb(new Error(originalPath + ' does not exist!'));
 
-    fs.stat(originalFilePath, function (err, stat) {
+    fs.stat(originalPath, function (err, stat) {
       if (err) return cb(err);
 
       if (stat.isDirectory()) {
-        mvDir(currentDir, originalFilePath, newFilePath, options, cb)
+        mvDir(currentDir, originalPath, newPath, options, cb)
       } else {
-        mvFile(currentDir, originalFilePath, newFilePath, options, cb)
+        mvFile(currentDir, originalPath, newPath, options, cb)
       }
     });
   })
 };
 
 function mvFile(currentDir, originalFilePath, newFilePath, options, cb) {
-  steps = [function(cb) {
-    rename(originalFilePath, newFilePath, options.git, cb)
-  }];
-  bar = new ProgressBar(':bar', {total: files.length});
-  excludes = getExcludes(options);
-  steps.push(function(cb) {updateReferencesInMovedFile(originalFilePath, newFilePath, null, cb)});
-  steps.push(function(cb) {updateReferencesToMovedFile(currentDir, originalFilePath, newFilePath, excludes, cb)});
+  fs.exists(newFilePath, function(exists) {
+    steps = [function(cb) {
+      rename(originalFilePath, newFilePath, options.git, cb)
+    }];
+    bar = new ProgressBar(':bar', {total: files.length});
+    excludes = getExcludes(options);
+    steps.push(function(cb) {updateReferencesInMovedFile(originalFilePath, newFilePath, null, cb)});
+    steps.push(function(cb) {updateReferencesToMovedFile(currentDir, originalFilePath, newFilePath, excludes, cb)});
 
-  async.series(steps, cb);
+    async.series(steps, cb);
+  })
 }
 
 function getExcludes(options) {
@@ -45,28 +47,17 @@ function getExcludes(options) {
   return excludes;
 }
 
-function validatePaths(originalFilePath, newFilePath, cb) {
-  async.series({
-    srcExists: function(cb) {fs.exists(originalFilePath, function(exists) {cb(null, exists)})},
-    destExists: function(cb) {fs.exists(newFilePath, function(exists) {cb(null, exists)})}
-  }, function(err, result) {
-    var srcExists = result.srcExists,
-      destExists = result.destExists;
-
-    if (!srcExists) return cb(new Error(originalFilePath + ' does not exist!'));
-    if (destExists) return cb(new Error(newFilePath + ' is already exist!'));
-    return cb(null, true);
-  });
-}
-
 function mvDir(currentDir, originalDirPath, newDirPath, options, cb) {
   originalDirPath = originalDirPath.replace(/\/$/, '');
+
+  console.log('newDirPath', newDirPath);
   if (newDirPath[newDirPath.length - 1] === '/') {
-    newDirPath = newDirPath + path.basename(originalDirPath)
+    var pathParts = originalDirPath.split(path.sep);
+    newDirPath = newDirPath + pathParts[pathParts.length - 1];
   }
 
-  validatePaths(originalDirPath, newDirPath, function(err) {
-    if (err) return cb(err);
+  fs.exists(newDirPath, function(exists) {
+    if (exists) return cb(new Error(newDirPath + ' is already exist!'));
 
     walk(originalDirPath, [], function(err, files) {
       if (err) return cb(err);
@@ -164,6 +155,7 @@ function updateReferencesToMovedFile(currentDir, originalFilePath, newFilePath, 
       var regex = exports.generateRequireRegex(oldRelativePath);
       fs.readFile(file, 'utf8', function(err, data) {
         if (err) return cb(err);
+
         if (data.indexOf(regex)) {
           var result = data.replace(regex, 'require$1$2' + newRelativePath + '$4$5');
           return fs.writeFile(file, result, {encoding: 'utf8'}, cb);
