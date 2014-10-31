@@ -13,8 +13,6 @@ npm install node-mv -g
 
 ## How to run it?
 
-### Exclude dir/files
-
 ### Git support
 
 If you source file is under git repo, use `--git` option
@@ -23,6 +21,8 @@ If you source file is under git repo, use `--git` option
 ```bash
 node-mv sample.js sample-renamed.js --git
 ```
+
+### Exclude dir/files
 
 You can pass a list of regex to `--excludes` to exclude folders or files you don't want the program to search
 
