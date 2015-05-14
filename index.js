@@ -30,7 +30,7 @@ function mvFile(currentDir, originalFilePath, newFilePath, options, cb) {
     steps = [function(cb) {
       rename(originalFilePath, newFilePath, options.git, cb)
     }];
-    bar = new ProgressBar(':bar', {total: files.length});
+    bar = new ProgressBar(':bar', {total: 1});
     excludes = getExcludes(options);
     steps.push(function(cb) {updateReferencesInMovedFile(originalFilePath, newFilePath, null, cb)});
     steps.push(function(cb) {updateReferencesToMovedFile(currentDir, originalFilePath, newFilePath, excludes, cb)});
